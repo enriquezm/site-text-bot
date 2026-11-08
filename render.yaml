@@ -1,0 +1,41 @@
+# Render Blueprint: the bot web service plus its Postgres database.
+# New → Blueprint in the Render dashboard, point it at this repo, then fill in the
+# secrets marked sync: false.
+services:
+  - type: web
+    name: site-text-bot
+    runtime: docker
+    plan: starter # paid, so the service never sleeps
+    healthCheckPath: /health
+    autoDeploy: true
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: site-text-bot-db
+          property: connectionString
+      - key: PUBLIC_URL
+        sync: false # e.g. https://site-text-bot.onrender.com
+      - key: TWILIO_ACCOUNT_SID
+        sync: false
+      - key: TWILIO_AUTH_TOKEN
+        sync: false
+      - key: TWILIO_FROM_NUMBER
+        sync: false
+      - key: OWNER_PHONE
+        sync: false # your number in E.164 form, e.g. +17025551234
+      - key: GITHUB_TOKEN
+        sync: false # fine-grained PAT on new-smyles: Contents + Pull requests read/write
+      - key: ANTHROPIC_API_KEY
+        sync: false
+      - key: GITHUB_OWNER
+        value: enriquezm
+      - key: GITHUB_REPO
+        value: new-smyles
+      - key: GITHUB_BASE_BRANCH
+        value: main
+      - key: PREVIEW_URL_TEMPLATE
+        sync: false # optional fallback, e.g. https://new-smyles-pr-{pr}.onrender.com
+
+databases:
+  - name: site-text-bot-db
+    plan: basic-256mb
